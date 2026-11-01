@@ -1,0 +1,15 @@
+{
+  "manifest_version": 3,
+  "name": "ESN Profile Extractor",
+  "version": "1.0.0",
+  "description": "Extract ESN profile details from the currently open authenticated profile page and copy them as an Excel-compatible row.",
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "clipboardWrite"
+  ],
+  "action": {
+    "default_title": "ESN Profile Extractor",
+    "default_popup": "popup.html"
+  }
+}

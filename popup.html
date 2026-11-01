@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ESN Profile Extractor</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <main class="dashboard">
+    <header class="header">
+      <div>
+        <h1>ESN Profile Extractor</h1>
+        <p class="subtitle">Current page → spreadsheet row</p>
+      </div>
+      <span id="statusBadge" class="badge neutral">Ready</span>
+    </header>
+
+    <section class="page-card">
+      <div class="section-label">CURRENT PAGE</div>
+      <div id="pageTitle" class="page-title">Checking active tab…</div>
+      <div id="pageUrl" class="page-url"></div>
+    </section>
+
+    <div id="message" class="message" role="status">Open a profile page and select Extract profile.</div>
+
+    <button id="extractButton" class="primary-button">Extract profile</button>
+
+    <section id="results" class="results hidden">
+      <div class="results-heading">
+        <span class="section-label">EXTRACTED DATA</span>
+        <span id="fieldCount" class="field-count"></span>
+      </div>
+      <div id="preview" class="preview"></div>
+      <button id="copyButton" class="primary-button copy-button">Copy spreadsheet row</button>
+      <p class="hint">Paste into the first destination cell in Excel or Google Sheets. Each field occupies one column.</p>
+    </section>
+
+    <footer>
+      <span>Local processing only · No account credentials accessed</span>
+    </footer>
+  </main>
+  <script src="lib/selectors.js"></script>
+  <script src="lib/formatter.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>
