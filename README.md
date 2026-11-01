@@ -156,6 +156,7 @@ After editing files, open `chrome://extensions` and click the extension's reload
 ```text
 profile-extractor-chrome/
 ├── manifest.json
+├── extension_logo.png
 ├── popup.html
 ├── popup.css
 ├── popup.js
