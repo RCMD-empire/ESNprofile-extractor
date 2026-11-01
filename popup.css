@@ -86,12 +86,22 @@ button:disabled { opacity: .55; cursor: not-allowed; }
 .primary-button:hover:not(:disabled) { background: #194eae; }
 
 .results { margin-top: 17px; }
-.field-count { color: #697386; font-size: 11px; }
-.preview {
-  margin: 9px 0 12px;
+.results-details {
   border: 1px solid #e1e5eb;
   border-radius: 8px;
   background: white;
+  overflow: hidden;
+}
+.results-heading {
+  padding: 10px;
+  cursor: pointer;
+  list-style-position: inside;
+}
+.results-heading::-webkit-details-marker { color: #758095; }
+.field-count { color: #697386; font-size: 11px; }
+.preview {
+  margin: 0;
+  border-top: 1px solid #edf0f3;
   overflow: hidden;
 }
 .preview-row {

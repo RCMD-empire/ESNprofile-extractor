@@ -8,6 +8,7 @@ const elements = {
   message: document.getElementById("message"),
   extractButton: document.getElementById("extractButton"),
   results: document.getElementById("results"),
+  resultsDetails: document.getElementById("resultsDetails"),
   fieldCount: document.getElementById("fieldCount"),
   preview: document.getElementById("preview"),
   copyButton: document.getElementById("copyButton")
@@ -37,6 +38,7 @@ async function getActiveTab() {
 
 function renderPreview(profile) {
   elements.preview.replaceChildren();
+  elements.resultsDetails.open = false;
 
   for (const column of CONFIG.fields) {
     const value = profile.data[column.key] || "";

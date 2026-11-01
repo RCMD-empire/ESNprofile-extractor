@@ -30,11 +30,13 @@
     <button id="extractButton" class="primary-button">Extract profile</button>
 
     <section id="results" class="results hidden">
-      <div class="results-heading">
-        <span class="section-label">EXTRACTED DATA</span>
-        <span id="fieldCount" class="field-count"></span>
-      </div>
-      <div id="preview" class="preview"></div>
+      <details id="resultsDetails" class="results-details">
+        <summary class="results-heading">
+          <span class="section-label">EXTRACTED DATA</span>
+          <span id="fieldCount" class="field-count"></span>
+        </summary>
+        <div id="preview" class="preview"></div>
+      </details>
       <button id="copyButton" class="primary-button copy-button">Copy spreadsheet row</button>
       <p class="hint">Paste into the first destination cell in Excel or Google Sheets. Each field occupies one column.</p>
     </section>
