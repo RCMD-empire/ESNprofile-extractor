@@ -64,7 +64,14 @@ Customize the copied Excel-compatible output in the `spreadsheet` object in `lib
 spreadsheet: {
   delimiter: "\t",
   lineEnding: "\r\n",
-  includeHeader: false
+  includeHeader: false,
+  outputMode: "formatted",
+  namedFunctions: {
+    username: "ESNACCOUNT",
+    facebook: "FB",
+    instagram: "INSTA",
+    linkedin: "LINKEDIN"
+  }
 }
 ```
 
@@ -83,6 +90,19 @@ outputColumns: [
 
 Set `includeHeader` to `true` to include labels as a header row. Blank columns remain blank
 in both the header and data rows.
+
+With `outputMode: "formatted"`, social URLs are converted to usernames and copied as
+working Excel formulas:
+
+```text
+=ESNACCOUNT("username")    =FB("facebook_username")
+=INSTA("instagram_username")    =LINKEDIN("linkedin_username")
+```
+
+The formatter has a separate function for each named function:
+`toESNAccountFormula`, `toFacebookFormula`, `toInstagramFormula`, and
+`toLinkedInFormula`. Set `outputMode` to `"raw"` to disable formula formatting and copy the
+original extracted values instead.
 
 ## How profile detection works
 
