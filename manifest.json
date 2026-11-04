@@ -12,7 +12,21 @@
   "permissions": [
     "activeTab",
     "scripting",
-    "clipboardWrite"
+    "clipboardWrite",
+    "storage"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "https://accounts.esn.org/*"
+      ],
+      "js": [
+        "lib/selectors.js",
+        "content/extractor.js",
+        "content/profile-urler.js"
+      ],
+      "run_at": "document_idle"
+    }
   ],
   "action": {
     "default_title": "ESN Profile Extractor",

@@ -33,10 +33,11 @@ No build step, Node.js, server, account credentials, or external service is requ
 
 1. Sign in to the target website normally in Chrome.
 2. For a member listing, open an `accounts.esn.org` page ending in `/alumni`, `/pending_members`, or `/members`, click the toolbar icon, and select **Enable Profile URLer**. Each row with a username in the `Name (username)` format receives a clickable profile URL.
-3. For an individual profile page, click the toolbar icon and select **Extract profile**.
-4. Review the detected values in the popup.
-5. Select **Copy spreadsheet row**.
-6. Select the destination cell in Excel or Google Sheets and paste.
+3. Once enabled, Profile URLer remembers the setting locally and automatically adds URLs whenever one of those listing pages is opened.
+4. For an individual profile page, click the toolbar icon and select **Extract profile**.
+5. Review the detected values in the popup.
+6. Select **Copy spreadsheet row**.
+7. Select the destination cell in Excel or Google Sheets and paste.
 
 The extension does not navigate to other profiles or process bookmarks. It only reads or updates the active tab after you click an action button.
 
@@ -116,6 +117,7 @@ The extension requests only:
 - `activeTab`: temporary access to the tab after the user invokes the extension.
 - `scripting`: inject the local extraction script into that tab.
 - `clipboardWrite`: support copying the generated row.
+- `storage`: remember the local Profile URLer toggle.
 
 It does not request bookmark, history, cookie, or broad host permissions. It does not store profile data or send it to a server.
 

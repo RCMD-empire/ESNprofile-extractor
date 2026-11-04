@@ -18,6 +18,7 @@ const elements = {
 let activeTab = null;
 let extractedProfile = null;
 let profileUrlerEnabled = false;
+const PROFILE_URLER_STORAGE_KEY = "esnProfileUrlerEnabled";
 
 function setStatus(label, type = "neutral") {
   elements.statusBadge.textContent = label;
@@ -106,6 +107,7 @@ async function setProfileUrler(enabled) {
     if (!result) throw new Error("The page did not return Profile URLer results.");
 
     profileUrlerEnabled = result.enabled;
+    await chrome.storage.local.set({ [PROFILE_URLER_STORAGE_KEY]: profileUrlerEnabled });
     elements.profileUrlerButton.textContent = profileUrlerEnabled
       ? "Disable Profile URLer"
       : "Enable Profile URLer";
@@ -197,6 +199,8 @@ async function copySpreadsheetRow() {
 
 async function initializePopup() {
   activeTab = await getActiveTab();
+  const savedSettings = await chrome.storage.local.get(PROFILE_URLER_STORAGE_KEY);
+  profileUrlerEnabled = savedSettings[PROFILE_URLER_STORAGE_KEY] === true;
 
   if (activeTab) {
     elements.pageTitle.textContent = activeTab.title || "Current tab";
@@ -207,6 +211,9 @@ async function initializePopup() {
   }
 
   elements.profileUrlerButton.disabled = !isSupportedListingPageUrl(activeTab?.url);
+  elements.profileUrlerButton.textContent = profileUrlerEnabled
+    ? "Disable Profile URLer"
+    : "Enable Profile URLer";
 }
 
 elements.extractButton.addEventListener("click", extractCurrentProfile);
