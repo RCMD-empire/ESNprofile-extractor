@@ -34,7 +34,7 @@ No build step, Node.js, server, account credentials, or external service is requ
 1. Sign in to the target website normally in Chrome.
 2. For a member listing, open an `accounts.esn.org` page ending in `/alumni`, `/pending_members`, or `/members`, click the toolbar icon, and select **Enable Profile URLer**. Each row with a username in the `Name (username)` format receives a clickable profile URL.
 3. Once enabled, Profile URLer remembers the setting locally and automatically adds URLs whenever one of those listing pages is opened.
-4. For an individual profile page, click the toolbar icon and select **Extract profile**.
+4. For an individual profile page under `https://accounts.esn.org/user/`, click the toolbar icon and select **Extract profile**.
 5. Review the detected values in the popup.
 6. Select **Copy spreadsheet row**.
 7. Select the destination cell in Excel or Google Sheets and paste.

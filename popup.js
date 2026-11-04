@@ -34,6 +34,19 @@ function isSupportedPageUrl(url) {
   return typeof url === "string" && /^https?:\/\//i.test(url);
 }
 
+function isSupportedProfilePageUrl(url) {
+  if (typeof url !== "string") return false;
+
+  try {
+    const parsedUrl = new URL(url);
+    return parsedUrl.protocol === "https:" &&
+      parsedUrl.hostname.toLowerCase() === "accounts.esn.org" &&
+      parsedUrl.pathname.startsWith("/user/");
+  } catch {
+    return false;
+  }
+}
+
 function isSupportedListingPageUrl(url) {
   if (!isSupportedPageUrl(url)) return false;
 
@@ -136,8 +149,8 @@ async function extractCurrentProfile() {
   try {
     activeTab = await getActiveTab();
 
-    if (!activeTab || !isSupportedPageUrl(activeTab.url)) {
-      throw new Error("Open an ordinary website profile page in the active tab first.");
+    if (!activeTab || !isSupportedProfilePageUrl(activeTab.url)) {
+      throw new Error("Open an ESN profile page under https://accounts.esn.org/user/ first.");
     }
 
     await chrome.scripting.executeScript({
@@ -176,7 +189,7 @@ async function extractCurrentProfile() {
     setStatus("Unable to extract", "error");
     setMessage(error.message || "An unexpected extraction error occurred.", "error");
   } finally {
-    elements.extractButton.disabled = false;
+    elements.extractButton.disabled = !isSupportedProfilePageUrl(activeTab?.url);
   }
 }
 
@@ -214,6 +227,7 @@ async function initializePopup() {
   elements.profileUrlerButton.textContent = profileUrlerEnabled
     ? "Disable Profile URLer"
     : "Enable Profile URLer";
+  elements.extractButton.disabled = !isSupportedProfilePageUrl(activeTab?.url);
 }
 
 elements.extractButton.addEventListener("click", extractCurrentProfile);
