@@ -2,7 +2,7 @@
 
 Version: 1.0.0
 
-A small Manifest V3 Chrome extension that reads the currently open profile page, previews the extracted fields, and copies one tab-separated row for Excel or Google Sheets.
+A small Manifest V3 Chrome extension that adds profile URLs to supported member listings, or reads the currently open profile page and copies one tab-separated row for Excel or Google Sheets.
 
 ## Included fields and output order
 
@@ -32,14 +32,14 @@ No build step, Node.js, server, account credentials, or external service is requ
 ## Usage
 
 1. Sign in to the target website normally in Chrome.
-2. Open an individual profile page.
-3. Click the Profile Data Extractor toolbar icon.
-4. Select **Extract profile**.
+2. For a member listing, open an `accounts.esn.org` page ending in `/alumni`, `/pending_members`, or `/members`, click the toolbar icon, and select **Enable Profile URLer**. Each row with a username in the `Name (username)` format receives a clickable profile URL.
+3. Once enabled, Profile URLer remembers the setting locally and automatically adds URLs whenever one of those listing pages is opened.
+4. For an individual profile page, click the toolbar icon and select **Extract profile**.
 5. Review the detected values in the popup.
 6. Select **Copy spreadsheet row**.
 7. Select the destination cell in Excel or Google Sheets and paste.
 
-The extension does not navigate to other profiles or process bookmarks. It only reads the active tab after you click the extraction button.
+The extension does not navigate to other profiles or process bookmarks. It only reads or updates the active tab after you click an action button.
 
 ## Website-specific selectors
 
@@ -106,9 +106,9 @@ original extracted values instead.
 
 ## How profile detection works
 
-The extension checks for the supplied page signature selectors and requires a detected name or username. This avoids treating every ordinary website tab as a profile page.
+The extension checks for the supplied page signature selectors and requires a detected name or username. This avoids treating every ordinary website tab as a profile page. Profile URLer separately requires the exact `accounts.esn.org` hostname and one of the supported listing paths.
 
-The extension does not currently enforce a hostname because the profile website's URL/domain was not supplied. If you want strict domain matching, add the known hostname to `isSupportedPageUrl()` in `popup.js`.
+Profile URLer removes periods, underscores, and at-signs from the username, converts spaces to hyphens, and creates URLs in the form `https://accounts.esn.org/user/{username}`. It does this regardless of the user's privacy setting.
 
 ## Permissions and privacy
 
@@ -117,6 +117,7 @@ The extension requests only:
 - `activeTab`: temporary access to the tab after the user invokes the extension.
 - `scripting`: inject the local extraction script into that tab.
 - `clipboardWrite`: support copying the generated row.
+- `storage`: remember the local Profile URLer toggle.
 
 It does not request bookmark, history, cookie, or broad host permissions. It does not store profile data or send it to a server.
 

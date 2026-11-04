@@ -6,6 +6,7 @@ const elements = {
   pageTitle: document.getElementById("pageTitle"),
   pageUrl: document.getElementById("pageUrl"),
   message: document.getElementById("message"),
+  profileUrlerButton: document.getElementById("profileUrlerButton"),
   extractButton: document.getElementById("extractButton"),
   results: document.getElementById("results"),
   resultsDetails: document.getElementById("resultsDetails"),
@@ -16,6 +17,8 @@ const elements = {
 
 let activeTab = null;
 let extractedProfile = null;
+let profileUrlerEnabled = false;
+const PROFILE_URLER_STORAGE_KEY = "esnProfileUrlerEnabled";
 
 function setStatus(label, type = "neutral") {
   elements.statusBadge.textContent = label;
@@ -29,6 +32,18 @@ function setMessage(message, type = "") {
 
 function isSupportedPageUrl(url) {
   return typeof url === "string" && /^https?:\/\//i.test(url);
+}
+
+function isSupportedListingPageUrl(url) {
+  if (!isSupportedPageUrl(url)) return false;
+
+  try {
+    const parsedUrl = new URL(url);
+    return parsedUrl.hostname.toLowerCase() === CONFIG.website.profileUrler.hostname &&
+      new RegExp(CONFIG.website.profileUrler.listingPathPattern, "i").test(parsedUrl.pathname);
+  } catch {
+    return false;
+  }
 }
 
 async function getActiveTab() {
@@ -59,6 +74,56 @@ function renderPreview(profile) {
 
   elements.fieldCount.textContent = `${profile.matchedFields}/${profile.totalFields} fields found`;
   elements.results.classList.remove("hidden");
+}
+
+async function setProfileUrler(enabled) {
+  elements.profileUrlerButton.disabled = true;
+  setStatus("Working…");
+  setMessage(enabled ? "Generating profile URLs in the member rows…" : "Removing generated profile URLs…");
+
+  try {
+    activeTab = await getActiveTab();
+    if (!activeTab || !isSupportedListingPageUrl(activeTab.url)) {
+      throw new Error("Open an ESN member listing page ending in /alumni, /pending_members, or /members.");
+    }
+
+    await chrome.scripting.executeScript({
+      target: { tabId: activeTab.id },
+      files: ["content/extractor.js"]
+    });
+
+    const results = await chrome.scripting.executeScript({
+      target: { tabId: activeTab.id },
+      func: (configuration, isEnabled) => {
+        if (!globalThis.ProfilePageExtractor?.toggleProfileUrls) {
+          throw new Error("The Profile URLer could not be initialized.");
+        }
+        return globalThis.ProfilePageExtractor.toggleProfileUrls(configuration, isEnabled);
+      },
+      args: [CONFIG, enabled]
+    });
+
+    const result = results?.[0]?.result;
+    if (!result) throw new Error("The page did not return Profile URLer results.");
+
+    profileUrlerEnabled = result.enabled;
+    await chrome.storage.local.set({ [PROFILE_URLER_STORAGE_KEY]: profileUrlerEnabled });
+    elements.profileUrlerButton.textContent = profileUrlerEnabled
+      ? "Disable Profile URLer"
+      : "Enable Profile URLer";
+    setStatus(profileUrlerEnabled ? "URLs added" : "URLs removed", "success");
+    setMessage(
+      profileUrlerEnabled
+        ? `Added ${result.generated} profile URL${result.generated === 1 ? "" : "s"} to ${result.rows} member row${result.rows === 1 ? "" : "s"}.`
+        : "Generated profile URLs were removed from the member rows.",
+      "success"
+    );
+  } catch (error) {
+    setStatus("Unable to update", "error");
+    setMessage(error.message || "An unexpected Profile URLer error occurred.", "error");
+  } finally {
+    elements.profileUrlerButton.disabled = !isSupportedListingPageUrl(activeTab?.url);
+  }
 }
 
 async function extractCurrentProfile() {
@@ -134,6 +199,8 @@ async function copySpreadsheetRow() {
 
 async function initializePopup() {
   activeTab = await getActiveTab();
+  const savedSettings = await chrome.storage.local.get(PROFILE_URLER_STORAGE_KEY);
+  profileUrlerEnabled = savedSettings[PROFILE_URLER_STORAGE_KEY] === true;
 
   if (activeTab) {
     elements.pageTitle.textContent = activeTab.title || "Current tab";
@@ -142,8 +209,14 @@ async function initializePopup() {
     elements.pageTitle.textContent = "No active tab";
     elements.pageUrl.textContent = "";
   }
+
+  elements.profileUrlerButton.disabled = !isSupportedListingPageUrl(activeTab?.url);
+  elements.profileUrlerButton.textContent = profileUrlerEnabled
+    ? "Disable Profile URLer"
+    : "Enable Profile URLer";
 }
 
 elements.extractButton.addEventListener("click", extractCurrentProfile);
+elements.profileUrlerButton.addEventListener("click", () => setProfileUrler(!profileUrlerEnabled));
 elements.copyButton.addEventListener("click", copySpreadsheetRow);
 initializePopup();
