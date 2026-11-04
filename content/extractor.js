@@ -29,6 +29,57 @@
     return String(value ?? "").replace(/[\t\r\n]+/g, " ").replace(/\s{2,}/g, " ").trim();
   }
 
+  function isSupportedListingPage(config) {
+    const urler = config.website.profileUrler;
+    if (!urler || location.hostname.toLowerCase() !== urler.hostname) return false;
+
+    return new RegExp(urler.listingPathPattern, "i").test(location.pathname);
+  }
+
+  function profileUrlFromRow(row) {
+    const text = cleanText(row.textContent);
+    const usernameMatch = text.match(/\(([^()]*)\)\s*$/);
+    if (!usernameMatch) return "";
+
+    const username = usernameMatch[1]
+      .trim()
+      .replace(/[._@]/g, "")
+      .replace(/\s+/g, "-");
+
+    return username ? `https://accounts.esn.org/user/${encodeURIComponent(username)}` : "";
+  }
+
+  function toggleProfileUrls(config, enabled) {
+    if (!isSupportedListingPage(config)) {
+      throw new Error("Profile URLer is only available on the supported member listing pages.");
+    }
+
+    const rows = document.querySelectorAll(config.website.profileUrler.rowSelector);
+    let generated = 0;
+
+    for (const row of rows) {
+      row.querySelectorAll("[data-profile-urler-link]").forEach(link => link.remove());
+      if (!enabled) continue;
+
+      const profileUrl = profileUrlFromRow(row);
+      if (!profileUrl) continue;
+
+      const separator = document.createElement("br");
+      separator.dataset.profileUrlerLink = "true";
+      const link = document.createElement("a");
+      link.href = profileUrl;
+      link.textContent = profileUrl;
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
+      link.dataset.profileUrlerLink = "true";
+      link.className = "profile-urler-link";
+      row.append(separator, link);
+      generated += 1;
+    }
+
+    return { enabled, rows: rows.length, generated };
+  }
+
   function extract(config) {
     const signatureMatches = config.website.pageSignatureSelectors
       .filter(selector => document.querySelector(selector)).length;
@@ -55,5 +106,5 @@
     };
   }
 
-  globalThis.ProfilePageExtractor = { extract };
+  globalThis.ProfilePageExtractor = { extract, toggleProfileUrls };
 })();

@@ -84,6 +84,12 @@ button {
 button:disabled { opacity: .55; cursor: not-allowed; }
 .primary-button { color: white; background: #245fce; }
 .primary-button:hover:not(:disabled) { background: #194eae; }
+.secondary-button {
+  margin-bottom: 8px;
+  color: #245fce;
+  background: #e8effc;
+}
+.secondary-button:hover:not(:disabled) { background: #d7e4fb; }
 
 .results { margin-top: 17px; }
 .results-details {
